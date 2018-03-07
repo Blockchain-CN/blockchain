@@ -1,4 +1,4 @@
-// Copyright 2018 Lothar . All rights reserved.
+// Copyright 2018 Blockchain-CN . All rights reserved.
 // https://github.com/Blockchain-CN
 
 package models
@@ -18,7 +18,7 @@ var singleChain *TheChain
 
 func init() {
 	singleChain = newChain()
-	Genesis := GenerateBlock("0", "This is Genesis Block, Copyright Belong to Lothar", 0)
+	Genesis := GenerateBlock("0", "This is Genesis Block, Copyright Belong to Blockchain-CN", 0)
 	singleChain.Chain = append(singleChain.Chain, Genesis)
 }
 
