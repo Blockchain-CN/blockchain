@@ -12,9 +12,9 @@ import (
 // Trans transaction struct
 type Trans struct {
 	// Account public key
-	Account     string `json:"account"`
+	Account string `json:"account"`
 	// Cipher encrypt result
-	Cipher      string `json:"cipher"`
+	Cipher string `json:"cipher"`
 	// Transaction result
 	Transaction string `json:"transaction"`
 }
