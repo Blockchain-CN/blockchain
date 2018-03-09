@@ -5,6 +5,7 @@ package join
 
 // JRequest request struct
 type JRequest struct {
+	PeerAddr string	`json:"peer_addr"`
 }
 
 // NewJRequest ...
@@ -14,6 +15,8 @@ func NewJRequest() *JRequest {
 
 // JResponse response struct
 type JResponse struct {
+	Errno  int    `json:"errno"`
+	Msg    string `json:"msg"`
 }
 
 // NewJResponse ...
