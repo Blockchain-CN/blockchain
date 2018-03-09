@@ -2,9 +2,9 @@ package protocal
 
 import (
 	"encoding/json"
-	"time"
 	"fmt"
 	"testing"
+	"time"
 
 	p2p "github.com/Blockchain-CN/pheromones"
 )

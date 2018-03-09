@@ -14,5 +14,6 @@ const (
 )
 
 const (
+	// P2PTimeOut p2p 网络错误
 	P2PTimeOut = time.Millisecond * 1000
 )

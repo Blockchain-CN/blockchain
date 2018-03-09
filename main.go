@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Blockchain-CN/blockchain/server"
 	"github.com/Blockchain-CN/blockchain/common"
 	pto "github.com/Blockchain-CN/blockchain/protocal"
+	"github.com/Blockchain-CN/blockchain/server"
 )
 
 func main() {

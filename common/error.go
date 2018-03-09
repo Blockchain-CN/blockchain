@@ -6,7 +6,7 @@ package common
 // response返回错误码
 const (
 	// Success ...
-	Success	= 0
+	Success = 0
 
 	// JoinPeerFail 添加peer失败
 	JoinPeerFail = 1001
@@ -31,8 +31,9 @@ func (err Error) Error() string {
 	return ErrMap[err]
 }
 
+// ErrMap 错误映射
 var ErrMap = map[Error]string{
-	Success: "成功",
+	Success:      "成功",
 	JoinPeerFail: "加入Peer失败",
 
 	ErrInvalidBlock:        "非法区块",

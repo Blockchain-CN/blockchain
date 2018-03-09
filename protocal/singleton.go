@@ -11,6 +11,7 @@ import (
 
 var singleton *Protocal
 
+// InitPto init the default protocal object
 func InitPto(addr string, to time.Duration) {
 	r1 := p2p.NewSRouter(to)
 	p1 := NewProtocal(addr, r1, to)
@@ -20,6 +21,7 @@ func InitPto(addr string, to time.Duration) {
 	go s1.ListenAndServe(addr)
 }
 
+// AddPeer add a peer to the default protocal's router
 func AddPeer(addr string) error {
 	return singleton.Add(addr, addr)
 }
