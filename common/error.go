@@ -10,6 +10,8 @@ const (
 
 	// JoinPeerFail 添加peer失败
 	JoinPeerFail = 1001
+	// CreatBlockFail 添加block失败
+	CreateBlockFain = 1002
 )
 
 // 内部错误码
@@ -34,7 +36,8 @@ func (err Error) Error() string {
 // ErrMap 错误映射
 var ErrMap = map[Error]string{
 	Success:      "成功",
-	JoinPeerFail: "加入Peer失败",
+	JoinPeerFail: "添加peer失败",
+	CreateBlockFain: "添加block失败",
 
 	ErrInvalidBlock:        "非法区块",
 	ErrInvalidGenesisBlock: "非法创世区块",

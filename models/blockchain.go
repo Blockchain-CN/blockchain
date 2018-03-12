@@ -5,9 +5,12 @@ package models
 
 import (
 	"encoding/json"
+	"sync"
 
 	"github.com/Blockchain-CN/blockchain/common"
 )
+
+var lock sync.Mutex
 
 // TheChain BlockChain struct.
 type TheChain struct {
@@ -39,6 +42,8 @@ func FormatChain(b []byte) (*TheChain, error) {
 
 // AppendChain append a valid block to the chain's tail.
 func AppendChain(b *Block) error {
+	lock.Lock()
+	defer lock.Unlock()
 	if !b.IsValid(GetChainTail()) {
 		return common.Error(common.ErrInvalidBlock)
 	}

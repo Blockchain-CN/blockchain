@@ -13,7 +13,13 @@ import (
 	p2p "github.com/Blockchain-CN/pheromones"
 )
 
+type command string
 const (
+	// Publish 发布最新block
+	Publish command = "publish"
+
+
+
 	// 连接请求
 	ConnectReq = "connectreq"
 	// 获取一个

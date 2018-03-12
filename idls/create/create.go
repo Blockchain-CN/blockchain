@@ -5,18 +5,22 @@ package create
 
 // CRequest request struct
 type CRequest struct {
+	Name 	string	`json:"name"`
+	Data 	string	`json:"data"`
 }
 
 // NewRequestIDL ...
-func NewRequestIDL() *CRequest {
+func NewCRequestIDL() *CRequest {
 	return &CRequest{}
 }
 
 // CResponse response struct
 type CResponse struct {
+	Errno int    `json:"errno"`
+	Msg   string `json:"msg"`
 }
 
 // NewResponseIDL ...
-func NewResponseIDL() *CResponse {
+func NewCResponseIDL() *CResponse {
 	return &CResponse{}
 }
