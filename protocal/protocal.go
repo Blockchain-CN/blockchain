@@ -80,7 +80,8 @@ func (p *Protocal) Handle(c net.Conn, msg []byte) ([]byte, error) {
 		// if the block can append to the tail
 		if block.IsValid(tailBlock) {
 			models.AppendChain(block)
-			// TODO 并需要向外广播 req.Data
+			// 并需要向外广播
+			go p.spreads(block)
 			return nil, nil
 		}
 		// if the block's index is longer
@@ -98,7 +99,8 @@ func (p *Protocal) Handle(c net.Conn, msg []byte) ([]byte, error) {
 		if err != nil {
 			return nil, common.Error(common.ErrInvalidChain)
 		}
-		// TODO 并需要向外广播 models.GetChainTail()
+		// 向外广播 models.GetChainTail()
+		go p.spreads(models.GetChainTail())
 		return nil, nil
 	default:
 		fmt.Printf("@%s@report: %s operation from @%s@ finished\n", p.HostName, req.Operation, req.Name)
@@ -196,7 +198,7 @@ func (p *Protocal) spreads(block *models.Block) {
 
 // 同步等待和所有peer通信完毕
 func (p *Protocal) spreadShort(reqStr []byte, peerList map[string]interface{}) {
-	for k, v := range peerList {
+	for _, v := range peerList {
 		wg.Add(1)
 		go func(addr string) {
 			for reqStr != nil {
