@@ -1,53 +1,37 @@
-// Copyright 2018 Blockchain-CN . All rights reserved.
-// https://github.com/Blockchain-CN
-
 package protocal
 
 import (
+	"time"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net"
-	"time"
 
 	p2p "github.com/Blockchain-CN/pheromones"
+	"github.com/Blockchain-CN/blockchain/models"
+	"github.com/Blockchain-CN/blockchain/common"
 )
 
 type command string
+
 const (
+	// RequireBlock 请求最新block
+	RequireBlock command = "require a block"
+
 	// Publish 发布最新block
-	Publish command = "publish"
+	DeliveryBlock command = "delivery a block"
 
+	// DeliveryChain 发送整条链
+	DeliveryChain command = "delivery the block"
 
+	// RequireChain 请求整条链
+	RequireChain command = "require the block"
 
-	// 连接请求
-	ConnectReq = "connectreq"
-	// 获取一个
-	GetReq = "getreq"
-	// 批量获取
-	FetchReq = "fetchreq"
-	// 同步更新
-	NoticeReq = "noticereq"
-
-	// 连接请求返回
-	ConnectResp = "connectresp"
-	// 获取一个返回
-	GetResp = "getresp"
-	// 批量获取返回
-	FetchResp = "fetchresp"
-	// 同步更新返回
-	NoticeResp = "noticeresp"
-
-	// 未知操作
-	UnknownOp = "unknownop"
+	// 未知命令
+	UnknownCmd command= "unknown cmd"
 
 	defultByte = 10240
 )
-
-type MsgGreetingReq struct {
-	Addr    string `json:"add"`
-	Account int    `json:"account"`
-}
 
 type Protocal struct {
 	HostName string
@@ -66,46 +50,59 @@ func (p *Protocal) Handle(c net.Conn, msg []byte) ([]byte, error) {
 	err := json.Unmarshal(msg, req)
 	if err != nil {
 		resp.Name = p.HostName
-		resp.Operation = UnknownOp
+		resp.Operation = UnknownCmd
 		ret, _ := json.Marshal(resp)
 		return ret, p2p.Error(p2p.ErrMismatchProtocalReq)
 	}
 	resp.Name = p.HostName
 	switch req.Operation {
-	case ConnectReq:
-		subReq := &MsgGreetingReq{}
-		err := json.Unmarshal(req.Data, subReq)
-		if err != nil {
-			return nil, p2p.Error(p2p.ErrMismatchProtocalResp)
-		}
+	case RequireBlock:
 		if cType == p2p.ShortConnection {
-			err = p.Router.AddRoute(req.Name, subReq.Addr)
+			err = p.Router.AddRoute(req.Name, req.Name)
 		} else {
 			if p.Router.AddRoute(req.Name, c) == nil {
 				go p.IOLoop(c)
 			}
 		}
+		c, _ := json.Marshal(models.GetChainTail())
+		resp.Operation = DeliveryBlock
+		resp.Data = c
+	case DeliveryBlock:
+		block , err := models.FormatBlock(req.Data)
 		if err != nil {
-			fmt.Printf("@%s@report: %s operation from @%s@ err=%s\n", p.HostName, req.Operation, req.Name, err)
+			return nil, p2p.Error(p2p.ErrMismatchProtocalResp)
 		}
-		resp.Operation = ConnectResp
-	case GetReq:
-		resp.Operation = GetResp
-	case FetchReq:
-		resp.Operation = FetchResp
-	case NoticeReq:
-		resp.Operation = NoticeResp
-	case ConnectResp:
-		resp.Operation = GetReq
-	case GetResp:
-		resp.Operation = FetchReq
-	case FetchResp:
-		resp.Operation = NoticeReq
-	case NoticeResp:
-		fmt.Printf("@%s@report: %s operation from @%s@ finished\n", p.HostName, req.Operation, req.Name)
+		// if the block's index is shorter or invalidate
+		tailBlock := models.GetChainTail()
+		if !block.IsTempValid() || block.Index <= tailBlock.Index {
+			return nil, common.Error(common.ErrInvalidBlock)
+		}
+		// if the block can append to the tail
+		if block.IsValid(tailBlock) {
+			models.AppendChain(block)
+			// TODO 并需要向外广播 req.Data
+			return nil, nil
+		}
+		// if the block's index is longer
+		resp.Operation = RequireChain
+	case RequireChain:
+		c, _ := json.Marshal(models.FetchChain())
+		resp.Operation = DeliveryChain
+		resp.Data = c
+	case DeliveryChain:
+		chain, err := models.FormatChain(req.Data)
+		if err != nil {
+			return nil, p2p.Error(p2p.ErrMismatchProtocalResp)
+		}
+		err = models.ReplaceChain(chain)
+		if err != nil {
+			return nil, common.Error(common.ErrInvalidChain)
+		}
+		// TODO 并需要向外广播 models.GetChainTail()
 		return nil, nil
 	default:
-		resp.Operation = UnknownOp
+		fmt.Printf("@%s@report: %s operation from @%s@ finished\n", p.HostName, req.Operation, req.Name)
+		return nil, nil
 	}
 	ret, err := json.Marshal(resp)
 	fmt.Printf("@%s@report: %s operation from @%s@ succeed\n", p.HostName, req.Operation, req.Name)
@@ -118,6 +115,7 @@ func (p *Protocal) IOLoop(c net.Conn) {
 	for {
 		msg, err := p.read(c)
 		if err != nil {
+			c.Close()
 			return
 		}
 		fmt.Printf("长连接收到信息, localhost=%s||remotehost=%s||msg=%s\n", c.LocalAddr(), c.RemoteAddr(), string(msg))
@@ -173,4 +171,50 @@ func (p *Protocal) Dispatch(name string, msg []byte) ([]byte, error) {
 
 func (p *Protocal) Delete(name string) error {
 	return p.Router.Delete(name)
+}
+
+// spread the latest block to all peers
+func (p *Protocal) spreads(block *models.Block) {
+	blockStr, err := json.Marshal(block)
+	if err != nil {
+		return
+	}
+	req := &p2p.MsgPto{
+		Name: ip,
+		Operation: DeliveryBlock,
+		Data: blockStr,
+	}
+	reqStr, err := json.Marshal(req)
+	if err != nil || reqStr == nil {
+		return
+	}
+	peerList := p.GetRouter().FetchPeers()
+	if p.GetRouter().GetConnType() == p2p.ShortConnection {
+		p.spreadShort(reqStr, peerList)
+	}
+}
+
+// 同步等待和所有peer通信完毕
+func (p *Protocal) spreadShort(reqStr []byte, peerList map[string]interface{}) {
+	for k, v := range peerList {
+		wg.Add(1)
+		go func(addr string) {
+			for reqStr != nil {
+				b, err := p.Dispatch(addr, reqStr)
+				if err != nil {
+					println("操作失败", err.Error())
+					return
+				}
+				reqStr = nil
+				reqStr, err = p.Handle(nil, b)
+				fmt.Println(string(reqStr), err)
+			}
+			wg.Done()
+		}(v.(string))
+	}
+	wg.Wait()
+}
+
+// TODO
+func (p *Protocal) spreadPersistent(name string, resp []byte) {
 }

@@ -64,6 +64,34 @@ func (b *Block) IsValid(pvb *Block) bool {
 	if b.PVHash != pvb.Hash || (pvb.Index+1) != b.Index {
 		return false
 	}
+	//check the validity of the trans data
+	t, err := FormatTrans([]byte(b.Data))
+	if err != nil {
+		return false
+	}
+	err = t.IsVaild()
+	if err != nil {
+		return false
+	}
+	tStr := strconv.FormatInt(b.Timestamp, 10)
+	nStr := strconv.FormatInt(b.Index, 10)
+	noStr := strconv.FormatInt(b.Nonce, 10)
+	metaData = b.PVHash + tStr + b.Data + nStr
+	return dhash.Verification(append([]byte(metaData), []byte(noStr)...), b.Hash)
+}
+
+// IsValid return if the block is temporary legal.
+func (b *Block) IsTempValid() bool {
+	var metaData string
+	//check the validity of the trans data
+	t, err := FormatTrans([]byte(b.Data))
+	if err != nil {
+		return false
+	}
+	err = t.IsVaild()
+	if err != nil {
+		return false
+	}
 	tStr := strconv.FormatInt(b.Timestamp, 10)
 	nStr := strconv.FormatInt(b.Index, 10)
 	noStr := strconv.FormatInt(b.Nonce, 10)
