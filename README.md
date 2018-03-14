@@ -4,8 +4,8 @@ Just a blockchain, Nothing in particular.
 ## 1.What's blockchain ?
 
 I will only give you a one-minute introduction to my block system.
-if you want a further reading, read the following page and try it by a demo(their author really finished an outstanding job). 
-[blockchain_guide](https://github.com/Blockchain-CN/blockchain_guide)
+if you want a further reading, read the following page and try it by a demo(their author really finished an outstanding job).   
+[blockchain_guide](https://github.com/Blockchain-CN/blockchain_guide)    
 [blockchain_demo](https://blockchaindemo.io/)
 
 ### 2.1 What's block ?
@@ -24,7 +24,7 @@ type Block struct {
 	Hash      string `json:"hash"`
 }
 ```
-![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片0.png)
+![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片0.jpg)
 
 ### 2.2 What's chain?
 a blockchain just contains a lot of blocks
@@ -35,19 +35,19 @@ type TheChain struct {
 }
 ```
 Chain means we organised these block like a list, PVHash data equals to the previous block's Hash data.
-![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片1.png)
-![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片2.png)
+![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片1.jpg)
+![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片2.jpg)
 
 ### 2.3 How does your data transfer to the whole network?
 In transport layer, blockchain system use the P2P network to spread your latest block to your peers, and after passing your peers' Validity test, peer will append it to their chain's tail, and spread it to their peers.   
 The complete transfer protocal
-![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片3.png)
+![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片3.jpg)
 How does peers do when they received a legal block and append to their chain's tail.
-![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片4.png)
+![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片4.jpg)
 How does peers do when they received a legal block and it's index is longer than their chain.
-![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片5.png)
+![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片5.jpg)
 How does peers do when they received a illegal block or it's index is shorter than their chain.
-![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片6.png)
+![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片6.jpg)
 
 ### 2.4 What's bit-coin ?
 It's a protocol about the data form inside a block.
