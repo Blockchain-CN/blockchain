@@ -1,15 +1,20 @@
+// Copyright 2018 Blockchain-CN . All rights reserved.
+// https://github.com/Blockchain-CN
+
 package protocal
 
 import (
-	"time"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net"
+	"time"
 
 	p2p "github.com/Blockchain-CN/pheromones"
-	"github.com/Blockchain-CN/blockchain/models"
+	dhash "github.com/Blockchain-CN/sha256"
+
 	"github.com/Blockchain-CN/blockchain/common"
+	"github.com/Blockchain-CN/blockchain/models"
 )
 
 type command string
@@ -28,7 +33,7 @@ const (
 	RequireChain command = "require the block"
 
 	// 未知命令
-	UnknownCmd command= "unknown cmd"
+	UnknownCmd command = "unknown cmd"
 
 	defultByte = 10240
 )
@@ -68,7 +73,9 @@ func (p *Protocal) Handle(c net.Conn, msg []byte) ([]byte, error) {
 		resp.Operation = DeliveryBlock
 		resp.Data = c
 	case DeliveryBlock:
-		block , err := models.FormatBlock(req.Data)
+		dhash.StopHash()
+		defer dhash.StartHash()
+		block, err := models.FormatBlock(req.Data)
 		if err != nil {
 			return nil, p2p.Error(p2p.ErrMismatchProtocalResp)
 		}
@@ -91,6 +98,8 @@ func (p *Protocal) Handle(c net.Conn, msg []byte) ([]byte, error) {
 		resp.Operation = DeliveryChain
 		resp.Data = c
 	case DeliveryChain:
+		dhash.StopHash()
+		defer dhash.StartHash()
 		chain, err := models.FormatChain(req.Data)
 		if err != nil {
 			return nil, p2p.Error(p2p.ErrMismatchProtocalResp)
@@ -176,15 +185,15 @@ func (p *Protocal) Delete(name string) error {
 }
 
 // spread the latest block to all peers
-func (p *Protocal) spreads(block *models.Block) {
+func (p *Protocal) spreads(block *models.Block ) {
 	blockStr, err := json.Marshal(block)
 	if err != nil {
 		return
 	}
 	req := &p2p.MsgPto{
-		Name: ip,
+		Name:      ip,
 		Operation: DeliveryBlock,
-		Data: blockStr,
+		Data:      blockStr,
 	}
 	reqStr, err := json.Marshal(req)
 	if err != nil || reqStr == nil {

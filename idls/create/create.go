@@ -5,11 +5,11 @@ package create
 
 // CRequest request struct
 type CRequest struct {
-	Name 	string	`json:"name"`
-	Data 	string	`json:"data"`
+	Name string `json:"name"`
+	Data string `json:"data"`
 }
 
-// NewRequestIDL ...
+// NewCRequestIDL ...
 func NewCRequestIDL() *CRequest {
 	return &CRequest{}
 }
@@ -20,7 +20,7 @@ type CResponse struct {
 	Msg   string `json:"msg"`
 }
 
-// NewResponseIDL ...
+// NewCResponseIDL ...
 func NewCResponseIDL() *CResponse {
 	return &CResponse{}
 }

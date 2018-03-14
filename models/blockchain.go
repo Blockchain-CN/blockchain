@@ -68,9 +68,12 @@ func GetChainLen() int64 {
 
 // ReplaceChain replace the chain by a longer valid chain.
 func ReplaceChain(c2 *TheChain) error {
+	lock.Lock()
+	defer lock.Unlock()
 	if int64(len(c2.Chain)) <= GetChainLen() {
 		return common.Error(common.ErrInvalidBlock)
 	}
+	// TODO use a faster algorithm to check the whole chain.
 	for i, b := range c2.Chain {
 		if i == 0 {
 			if *c2.Chain[i] != *singleChain.Chain[i] {

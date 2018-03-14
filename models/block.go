@@ -80,7 +80,7 @@ func (b *Block) IsValid(pvb *Block) bool {
 	return dhash.Verification(append([]byte(metaData), []byte(noStr)...), b.Hash)
 }
 
-// IsValid return if the block is temporary legal.
+// IsTempValid return if the block is temporary legal.
 func (b *Block) IsTempValid() bool {
 	var metaData string
 	//check the validity of the trans data

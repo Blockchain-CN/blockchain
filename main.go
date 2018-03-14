@@ -4,18 +4,18 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
-	"errors"
+	"net"
 
 	"github.com/Blockchain-CN/blockchain/common"
 	pto "github.com/Blockchain-CN/blockchain/protocal"
 	"github.com/Blockchain-CN/blockchain/server"
-	"net"
 )
 
 func main() {
-	ip := GetIP()
+	ip := getIP()
 	if ip == "" {
 		printAndDie(errors.New("Unable to get a avilable ip"))
 	}
@@ -30,9 +30,8 @@ func main() {
 	}
 }
 
-func GetIP() string {
+func getIP() string {
 	addrs, err := net.InterfaceAddrs()
-
 	if err != nil {
 		return ""
 	}

@@ -35,8 +35,8 @@ func (err Error) Error() string {
 
 // ErrMap 错误映射
 var ErrMap = map[Error]string{
-	Success:      "成功",
-	JoinPeerFail: "添加peer失败",
+	Success:         "成功",
+	JoinPeerFail:    "添加peer失败",
 	CreateBlockFain: "添加block失败",
 
 	ErrInvalidBlock:        "非法区块",

@@ -4,21 +4,23 @@
 package protocal
 
 import (
-	"time"
 	"encoding/json"
-	"sync"
 	"fmt"
+	"sync"
+	"time"
 
 	p2p "github.com/Blockchain-CN/pheromones"
-	"github.com/Blockchain-CN/blockchain/models"
+
 	idl "github.com/Blockchain-CN/blockchain/idls/create"
+	"github.com/Blockchain-CN/blockchain/models"
 )
 
 var (
 	singleton *Protocal
+	// DataQueue data channel
 	DataQueue chan idl.CRequest
-	wg sync.WaitGroup
-	ip string
+	wg        sync.WaitGroup
+	ip        string
 )
 
 // InitPto init the default protocal object
@@ -40,7 +42,7 @@ func AddPeer(addr string) error {
 		return err
 	}
 	req := &p2p.MsgPto{
-		Name: ip,
+		Name:      ip,
 		Operation: RequireBlock,
 	}
 	reqStr, err := json.Marshal(req)
@@ -60,11 +62,11 @@ func AddPeer(addr string) error {
 	return nil
 }
 
-//
+// BlockPublisher loop to publish the block
 func BlockPublisher() {
 	for {
 		select {
-		case ud := <- DataQueue:
+		case ud := <-DataQueue:
 			// get user object
 			user, err := models.Login(ud.Name)
 			if err != nil {
