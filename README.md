@@ -40,13 +40,13 @@ Chain means we organised these block like a list, PVHash data equals to the prev
 
 ### 2.3 How does your data transfer to the whole network?
 In transport layer, blockchain system use the P2P network to spread your latest block to your peers, and after passing your peers' Validity test, peer will append it to their chain's tail, and spread it to their peers.   
-The complete transfer protocal   
+- The complete transfer protocal.   
 ![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片3.jpg)   
-How does peers do when they received a legal block and append to their chain's tail?   
+- How does peers do when they received a legal block and append to their chain's tail?   
 ![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片4.jpg)   
-How does peers do when they received a legal block and it's index is longer than their chain?   
+- How does peers do when they received a legal block and it's index is longer than their chain?   
 ![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片5.jpg)   
-How does peers do when they received a illegal block or it's index is shorter than their chain?   
+- How does peers do when they received a illegal block or it's index is shorter than their chain?   
 ![image](https://github.com/Blockchain-CN/blockchain/raw/master/readme_image/幻灯片6.jpg)   
 
 ### 2.4 What's bit-coin ?
