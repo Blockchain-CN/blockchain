@@ -11,6 +11,7 @@ import (
 
 	"github.com/Blockchain-CN/blockchain/server/create"
 	"github.com/Blockchain-CN/blockchain/server/join"
+	"github.com/Blockchain-CN/blockchain/server/show"
 	"github.com/Blockchain-CN/httpsvr"
 )
 
@@ -24,6 +25,7 @@ func Serve(addr string) error {
 	go GracefulExit(s)
 	s.AddRoute("POST", "/blockchain/create", &create.CController{})
 	s.AddRoute("POST", "/blockchain/join", &join.JController{})
+	s.AddRoute("POST", "/blockchain/show", &show.SController{})
 	return s.Serve()
 }
 

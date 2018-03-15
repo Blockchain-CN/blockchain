@@ -49,7 +49,7 @@ func GenerateBlock(pvHash, data string, index int64) *Block {
 		Data:      data,
 		Index:     index,
 		Nonce:     nonce,
-		Hash:      fmt.Sprint(hash),
+		Hash:      fmt.Sprintf("%x", hash),
 	}
 }
 

@@ -23,6 +23,10 @@ var (
 	ip        string
 )
 
+func GetProtocal() *Protocal{
+	return singleton
+}
+
 // InitPto init the default protocal object
 func InitPto(addr string, to time.Duration) {
 	r1 := p2p.NewSRouter(to)
