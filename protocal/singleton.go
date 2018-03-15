@@ -20,7 +20,7 @@ var (
 	// DataQueue data channel
 	DataQueue chan *idl.CRequest
 	wg        sync.WaitGroup
-	ip        string
+	hostAddr        string
 )
 
 func GetProtocal() *Protocal{
@@ -29,6 +29,7 @@ func GetProtocal() *Protocal{
 
 // InitPto init the default protocal object
 func InitPto(addr string, to time.Duration) {
+	hostAddr = addr
 	r1 := p2p.NewSRouter(to)
 	p1 := NewProtocal(addr, r1, to)
 	s1 := p2p.NewServer(p1, to)
@@ -46,7 +47,7 @@ func AddPeer(addr string) error {
 		return err
 	}
 	req := &p2p.MsgPto{
-		Name:      ip,
+		Name:      hostAddr,
 		Operation: RequireBlock,
 	}
 	reqStr, err := json.Marshal(req)
@@ -62,7 +63,7 @@ func AddPeer(addr string) error {
 		}
 		reqStr = nil
 		reqStr, err = singleton.Handle(nil, b)
-		fmt.Println(string(reqStr), err)
+		fmt.Println("处理的返回结果和错误码为：", string(reqStr), err)
 	}
 	return nil
 }

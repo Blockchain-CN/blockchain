@@ -51,21 +51,24 @@ func (p *Protocal) GetConnType() p2p.ConnType {
 }
 
 func (p *Protocal) Handle(c net.Conn, msg []byte) ([]byte, error) {
+	if msg == nil {
+		return nil, nil
+	}
 	cType := p.Router.GetConnType()
 	req := &p2p.MsgPto{}
 	resp := &p2p.MsgPto{}
 	err := json.Unmarshal(msg, req)
 	if err != nil {
-		resp.Name = p.HostName
-		resp.Operation = UnknownCmd
-		ret, _ := json.Marshal(resp)
-		return ret, p2p.Error(p2p.ErrMismatchProtocalReq)
+		return nil, p2p.Error(p2p.ErrMismatchProtocalReq)
 	}
 	resp.Name = p.HostName
 	switch req.Operation {
 	case RequireBlock:
 		if cType == p2p.ShortConnection {
 			err = p.Router.AddRoute(req.Name, req.Name)
+			if err != nil {
+				fmt.Println(err)
+			}
 		} else {
 			if p.Router.AddRoute(req.Name, c) == nil {
 				go p.IOLoop(c)
@@ -83,6 +86,9 @@ func (p *Protocal) Handle(c net.Conn, msg []byte) ([]byte, error) {
 		}
 		// if the block's index is shorter or invalidate
 		tailBlock := models.GetChainTail()
+		if *block == *tailBlock {
+			return nil, nil
+		}
 		if !block.IsTempValid() || block.Index <= tailBlock.Index {
 			return nil, common.Error(common.ErrInvalidBlock)
 		}
@@ -193,7 +199,7 @@ func (p *Protocal) spreads(block *models.Block ) {
 		return
 	}
 	req := &p2p.MsgPto{
-		Name:      ip,
+		Name:      hostAddr,
 		Operation: DeliveryBlock,
 		Data:      blockStr,
 	}
@@ -223,7 +229,7 @@ func (p *Protocal) spreadShort(reqStr []byte, peerList map[string]interface{}) {
 				fmt.Println(string(reqStr), err)
 			}
 			wg.Done()
-		}(v.(string))
+		}(v.(p2p.EndPointS).Addr)
 	}
 	wg.Wait()
 }

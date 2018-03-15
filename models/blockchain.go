@@ -21,7 +21,13 @@ var singleChain *TheChain
 
 func init() {
 	singleChain = newChain()
-	Genesis := GenerateBlock("0", "This is Genesis Block, Copyright Belong to Blockchain-CN", 0)
+	Genesis := &Block{
+		PVHash: "0",
+		Timestamp: 0,
+		Data: "This is Genesis Block, Copyright Belong to Blockchain-CN",
+		Index: 0,
+		Nonce: 0,
+		Hash: "0"}
 	singleChain.Chain = append(singleChain.Chain, Genesis)
 }
 

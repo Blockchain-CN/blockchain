@@ -34,12 +34,13 @@ func main() {
 	if ip == "" {
 		printAndDie(errors.New("Unable to get a avilable ip"))
 	}
+	ip = "127.0.0.1"
 
 	// init protocal
-	pto.InitPto("127.0.0.1"+P2PPort, common.P2PTimeOut)
+	pto.InitPto(ip+P2PPort, common.P2PTimeOut)
 
 	// call this func will block current goroutine
-	if err := server.Serve("127.0.0.1"+ServerPort); err != nil {
+	if err := server.Serve(ip+ServerPort); err != nil {
 		printAndDie(err)
 		return
 	}
@@ -57,7 +58,6 @@ func getIP() string {
 			if ipnet.IP.To4() != nil {
 				return ipnet.IP.String()
 			}
-
 		}
 	}
 	return ""
