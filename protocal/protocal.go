@@ -17,23 +17,21 @@ import (
 	"github.com/Blockchain-CN/blockchain/models"
 )
 
-type command string
-
 const (
 	// RequireBlock 请求最新block
-	RequireBlock command = "require a block"
+	RequireBlock = "require a block"
 
 	// Publish 发布最新block
-	DeliveryBlock command = "delivery a block"
+	DeliveryBlock = "delivery a block"
 
 	// DeliveryChain 发送整条链
-	DeliveryChain command = "delivery the block"
+	DeliveryChain = "delivery the block"
 
 	// RequireChain 请求整条链
-	RequireChain command = "require the block"
+	RequireChain = "require the block"
 
 	// 未知命令
-	UnknownCmd command = "unknown cmd"
+	UnknownCmd = "unknown cmd"
 
 	defultByte = 10240
 )
@@ -46,6 +44,10 @@ type Protocal struct {
 
 func NewProtocal(name string, r p2p.Router, to time.Duration) *Protocal {
 	return &Protocal{name, r, to}
+}
+
+func (p *Protocal) GetConnType() p2p.ConnType {
+	return p.Router.GetConnType()
 }
 
 func (p *Protocal) Handle(c net.Conn, msg []byte) ([]byte, error) {

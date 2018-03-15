@@ -14,7 +14,7 @@ type CController struct {
 
 // GenIdl ...
 func (c *CController) GenIdl() interface{} {
-	return idl.NewRequestIDL()
+	return idl.NewCRequestIDL()
 }
 
 // Do ...

@@ -18,7 +18,7 @@ import (
 var (
 	singleton *Protocal
 	// DataQueue data channel
-	DataQueue chan idl.CRequest
+	DataQueue chan *idl.CRequest
 	wg        sync.WaitGroup
 	ip        string
 )
@@ -29,7 +29,7 @@ func InitPto(addr string, to time.Duration) {
 	p1 := NewProtocal(addr, r1, to)
 	s1 := p2p.NewServer(p1, to)
 	singleton = p1
-	DataQueue = make(chan string, 100)
+	DataQueue = make(chan *idl.CRequest, 100)
 	println("P2P Servering on ", addr)
 	go BlockPublisher()
 	go s1.ListenAndServe(addr)
@@ -53,7 +53,8 @@ func AddPeer(addr string) error {
 		b, err := singleton.Dispatch(addr, reqStr)
 		if err != nil {
 			println("操作失败", err.Error())
-			return
+			singleton.Delete(addr)
+			return err
 		}
 		reqStr = nil
 		reqStr, err = singleton.Handle(nil, b)
@@ -70,17 +71,17 @@ func BlockPublisher() {
 			// get user object
 			user, err := models.Login(ud.Name)
 			if err != nil {
-				return err
+				return
 			}
 
 			// get trans object
 			trans, err := models.GenerateTransWithKey(user.Public, user.Private, ud.Data)
 			if err != nil {
-				return err
+				return
 			}
 			transStr, err := json.Marshal(trans)
 			if err != nil {
-				return err
+				return
 			}
 
 			// append a block to the chain until succeed

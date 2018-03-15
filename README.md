@@ -86,4 +86,22 @@ As far as i knew, you need a longer blockchain. You publish the longer chain, an
 		- const             // defined const variables
 	idl
 	    - create            // defined the data struct of input and output
-	    - join              // defined the data struct of input and output
+	    - join              // defined the data struct of input and output  
+
+### 2.2 How to use
+
+```
+// step1: 构建&运行
+go build
+./blockchain -server :10024 -p2p :12345
+```
+
+```
+// step2: 加入一个临近peer
+curl -H 'content-type: application/json' -X POST -d '{"peer_addr":"xxxxxx"}' http://127.0.0.1:10024/blockchain/join
+```
+
+```
+// step3: 发布一个区块
+curl -H 'content-type: application/json' -X POST -d '{"name":"luda", "data":"first blockchain"}' http://127.0.0.1:10024/blockchain/create
+```

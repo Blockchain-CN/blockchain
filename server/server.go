@@ -15,8 +15,8 @@ import (
 )
 
 // Serve ...
-func Serve() error {
-	s := httpsvr.New("127.0.0.1:10024",
+func Serve(addr string) error {
+	s := httpsvr.New(addr,
 		httpsvr.SetReadTimeout(time.Millisecond*200),
 		httpsvr.SetWriteTimeout(time.Millisecond*200),
 		httpsvr.SetMaxAccess(100),

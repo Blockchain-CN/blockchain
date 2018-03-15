@@ -12,19 +12,34 @@ import (
 	"github.com/Blockchain-CN/blockchain/common"
 	pto "github.com/Blockchain-CN/blockchain/protocal"
 	"github.com/Blockchain-CN/blockchain/server"
+	"flag"
 )
 
 func main() {
+	var (
+		ServerPort string
+		P2PPort	   string
+	)
+
+	flag.StringVar(&ServerPort, "server", "", "-server=:10024")
+	flag.StringVar(&P2PPort, "p2p", "", "-p2p=:12345")
+	flag.Parse()
+	if ServerPort == "" || P2PPort == "" {
+		useage()
+		printAndDie(errors.New("Unable to get a avilable port for p2p node"))
+
+	}
+
 	ip := getIP()
 	if ip == "" {
 		printAndDie(errors.New("Unable to get a avilable ip"))
 	}
 
 	// init protocal
-	pto.InitPto(ip+":12346", common.P2PTimeOut)
+	pto.InitPto("127.0.0.1"+P2PPort, common.P2PTimeOut)
 
 	// call this func will block current goroutine
-	if err := server.Serve(); err != nil {
+	if err := server.Serve("127.0.0.1"+ServerPort); err != nil {
 		printAndDie(err)
 		return
 	}
@@ -50,5 +65,10 @@ func getIP() string {
 
 func printAndDie(err error) {
 	fmt.Fprintf(os.Stderr, "init failed, err:%s", err)
+	os.Exit(-1)
+}
+
+func useage() {
+	fmt.Fprintf(os.Stdout, "please run \"%s --help\" and get help info\n", os.Args[0])
 	os.Exit(-1)
 }
