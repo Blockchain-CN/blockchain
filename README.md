@@ -105,3 +105,35 @@ curl -H 'content-type: application/json' -X POST -d '{"peer_addr":"xxxxxx"}' htt
 // step3: 发布一个区块
 curl -H 'content-type: application/json' -X POST -d '{"name":"luda", "data":"first blockchain"}' http://127.0.0.1:10024/blockchain/create
 ```
+
+```
+// step4: 查看区块链
+curl -H 'content-type: application/json' -X POST -d '{"chain":true, "peer":true}' http://127.0.0.1:10024/blockchain/show
+```
+
+```json
+// 获得的json为
+{
+  "chain": {
+    "chain": [
+      {
+        "pv_hash": "0",
+        "timestamp": 1521084679901628400,
+        "data": "This is Genesis Block, Copyright Belong to Blockchain-CN",
+        "index": 0,
+        "nonce": 520,
+        "hash": "0068aa0c6393b0d617fb7f297eeaa1bf857dae2371fe7be55321f71363bb7a5b"
+      },
+      {
+        "pv_hash": "0068aa0c6393b0d617fb7f297eeaa1bf857dae2371fe7be55321f71363bb7a5b",
+        "timestamp": 1521084685874480600,
+        "data": "{\"account\":\"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWzESbJDsfzkYpMtFqKr266wNin3A9+Gz6KICuL6VxwkHISCdaaMZ3joRvv5L01ld8BDki80Wi75srINIuTy+aXhwa6uywLsFg6K9i0Drqimde7ny4ie3WNgBaOz2h0ZshQeMzgkOryJ0wL24EQ02BejtM/vPL0o1Pf73QoxwsVwIDAQAB\",\"cipher\":\"Pel+VgGy2tCem66lMjbQ2/hXSLR+jYJ3PMFt8C7xgdTeDQAar3jiQvV3lLjfvi4Hde4M/LGGlbzrV42OdeJnHHIkYp6gaEXf+c7tR2Jwbg9qm0mljjv6rT6A2nFYfmxbSoxgd5cyGdzJ2l6v3IwPpk34sSo12DcBlG+SGWYe5z0=\",\"transaction\":\"block 1\"}",
+        "index": 1,
+        "nonce": 2207,
+        "hash": "00fb9507a21e2bdf64a5e773b1cf5e43d0c8caafe2e2ab240ccd0e5a6ea23ff1"
+      }
+    ]
+  },
+  "peer": {}
+}
+```
